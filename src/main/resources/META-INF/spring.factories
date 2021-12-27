@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  br.leg.camara.lexmljsonixspringbootstarter.conversor.ConversorLexmlJsonixAutoConfiguration,\
+  br.leg.camara.lexmljsonixspringbootstarter.service.LexmlJsonixServiceAutoConfiguration
