@@ -125,5 +125,7 @@ Para realizar a conversão, esta biblioteca utiliza o conversor jsonix-lexml. Ma
 ```
 **Observação:** As urls acima podem ser alteradas, mas o formato do retorno deve permanecer o mesmo para que a classe LexmlJsonixServiceImpl funcione corretamente. Caso você possua outros serviços que retornem dados equivalentes, você poderá criar uma nova classe que implementa a interface LexmlJsonixService e construir o código para tratar os dados retornados nos novos serviços.
 
+## Javadoc
+- [Documentação gerada com Javadoc](doc/index.html)
 
 
