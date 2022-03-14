@@ -15,16 +15,16 @@ import br.leg.camara.lexmljsonixspringbootstarter.utils.DadosInOut;
 
 /**
  * Classe usada para converter, de xml para json e vice-versa, o texto em formato Lexml de uma proposição.
- * Esta classe utiliza o executável gerado a partir do código do projeto 
+ * Esta classe utiliza o executável gerado a partir do código do projeto
  * <a href="https://github.com/lexml/jsonix-lexml">https://github.com/lexml/jsonix-lexml</a> para realizar a conversão.
- * 
+ *
  * @author Robson Barros
  * @see <a href="https://github.com/lexml/jsonix-lexml">https://github.com/lexml/jsonix-lexml</a>
  */
 public class ConversorLexmlJsonixImpl implements ConversorLexmlJsonix {
-	
+
 	private String activeProfile;
-	
+
 	private LexmlJsonixProperties lexmlJsonixProperties;
 
 	public ConversorLexmlJsonixImpl(LexmlJsonixProperties lexmlJsonixProperties, String activeProfile) throws FileNotFoundException {
@@ -36,35 +36,33 @@ public class ConversorLexmlJsonixImpl implements ConversorLexmlJsonix {
 	private void checarExistenciaArquivo(String filename) throws FileNotFoundException {
 		if ("test".equals(activeProfile))
 			return;
-		
+
 		if (!(new File(filename).isFile()))
-			throw new FileNotFoundException(filename);		
+			throw new FileNotFoundException(filename);
 	}
 
-	@Override
 	public String xmlToJson(String xml) {
 		try {
 			if (lexmlJsonixProperties.isUsarEntradaSaidaPadraoDuranteConversao())
 				return converterXmlToJsonixUsandoEntradaSaidaPadrao(xml);
 			else
-				return converterXmlToJsonixUsandoArquivo(xml);			
+				return converterXmlToJsonixUsandoArquivo(xml);
 		} catch (Exception e) {
 			throw new RuntimeException("Erro ao converter de xml para jsonix: " + e.getMessage(), e);
 		}
 	}
-	
-	@Override
+
 	public String jsonToXml(String json) {
 		try {
 			if (lexmlJsonixProperties.isUsarEntradaSaidaPadraoDuranteConversao())
 				return converterJsonixToXmlUsandoEntradaSaidaPadrao(json);
 			else
-				return converterJsonixToXmlUsandoArquivo(json);			
+				return converterJsonixToXmlUsandoArquivo(json);
 		} catch (Exception e) {
 			throw new RuntimeException("Erro ao converter de json para xml: " + e.getMessage(), e);
 		}
 	}
-	
+
 	private String converterJsonixToXmlUsandoEntradaSaidaPadrao(String json) {
 		return converterUsandoEntradaSaidaPadrao(json, "toxml");
 	}
@@ -80,21 +78,21 @@ public class ConversorLexmlJsonixImpl implements ConversorLexmlJsonix {
 	private String converterXmlToJsonixUsandoArquivo(String xml) throws IOException {
 		return converterUsandoArquivo(xml, "tojson");
 	}
-	
+
 	private String converterUsandoArquivo(String source, String formatoSaida) throws IOException {
 		Path xmlPath = writeStringToDisk(source);
-		
+
 		String argumentoIn = xmlPath.toString();
 		String argumentoOut = xmlPath.getParent().toString() + File.separator + "jsonix.json";
 		String cli = String.format("%s %s %s -o %s", lexmlJsonixProperties.getCli(), formatoSaida, argumentoIn, argumentoOut);
 
 		executarComando(cli, null);
-		
+
 		String result = new String(Files.readAllBytes(Paths.get(argumentoOut)));
-		
+
 		if (lexmlJsonixProperties.isRemoverDiretorioAposConversao())
 			deleteFolder(xmlPath.getParent());
-		
+
 		return result;
 	}
 
@@ -102,20 +100,20 @@ public class ConversorLexmlJsonixImpl implements ConversorLexmlJsonix {
 		String argumentoIn = "-"; // lê da entrada padrão
 		String argumentoOut = "-"; // escreve na entrada padrão
 		String cli = String.format("%s %s %s -o %s", lexmlJsonixProperties.getCli(), formatoSaida, argumentoIn, argumentoOut);
-		
+
 		DadosInOut dadosInOut = new DadosInOut();
 		dadosInOut.setIn(source);
-		
+
 		executarComando(cli, dadosInOut);
-		
-		return dadosInOut.getOut();				
+
+		return dadosInOut.getOut();
 	}
-	
+
 	private void executarComando(String comando, DadosInOut dadosInOut) {
 		if (SystemUtils.IS_OS_WINDOWS)
 			CliUtils.execWindowsCommand(comando, dadosInOut);
 		else
-			CliUtils.execLinuxCommand(comando, dadosInOut);		
+			CliUtils.execLinuxCommand(comando, dadosInOut);
 	}
 
 	private void deleteFolder(Path folder) throws IOException {
