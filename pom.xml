@@ -23,10 +23,10 @@
         </dependencies>
     </dependencyManagement>
 
-	<groupId>br.leg.camara</groupId>
+	<groupId>br.gov.lexml</groupId>
 	<artifactId>lexml-jsonix-spring-boot-starter</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>lex-jsonix-spring-boot-starter</name>
+	<name>lexml-jsonix-spring-boot-starter</name>
 	<description>Biblioteca que retorna o texto de uma norma em formato jsonix</description>
 
 	<properties>
