@@ -34,8 +34,8 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git@github.com:lexml/lexml-jsonix-spring-boot-starter.git</connection>
-        <developerConnection>scm:git:git@github.com:lexml/lexml-jsonix-spring-boot-starter.git</developerConnection>
+	    <connection>scm:git:ssh://git@github.com/lexml/lexml-jsonix-spring-boot-starter.git</connection>
+	    <developerConnection>scm:git:ssh://git@github.com/lexml/lexml-jsonix-spring-boot-starter.git</developerConnection>
         <url>https://github.com/lexml/lexml-jsonix-spring-boot-starter/tree/develop</url>
     <tag>lexml-jsonix-spring-boot-starter-0.1.1</tag>
   </scm>
