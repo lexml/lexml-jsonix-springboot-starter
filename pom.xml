@@ -21,7 +21,8 @@
         </developer>
         <developer>
             <id>rslima</id>
-            <name>Ricardo Lima</name>
+	    <name>Ricardo Lima</name>
+	    <email>rslima@gmail.com</email>
         </developer>
     </developers>
 
