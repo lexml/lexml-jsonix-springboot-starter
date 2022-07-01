@@ -43,6 +43,10 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <file.encoding>UTF-8</file.encoding>
     </properties>
 
     <distributionManagement>
@@ -50,12 +54,12 @@
             <id>ossrh-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
-        <repositories>
-            <repository>
-                <id>lexml-jsonix-spring-boot-starter</id>
-                <url>https://oss.sonatype.org/content/repositories/lexml-jsonix-spring-boot-starter</url>
-            </repository>
-        </repositories>
+
+        <repository>
+            <id>lexml-jsonix-spring-boot-starter</id>
+            <url>https://oss.sonatype.org/content/repositories/lexml-jsonix-spring-boot-starter</url>
+        </repository>
+
     </distributionManagement>
 
     <dependencyManagement>
