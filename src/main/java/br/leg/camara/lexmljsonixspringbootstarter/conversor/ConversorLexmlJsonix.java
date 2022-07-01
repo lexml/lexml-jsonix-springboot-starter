@@ -16,7 +16,7 @@ public interface ConversorLexmlJsonix {
 		
 	/**
 	 * Converte uma string xml, em formato Lexml, para json.
-	 * @param xml string xml a ser convertida para json.
+	 * @param json string xml a ser convertida para json.
 	 * @return string json.
 	 */
 	public String jsonToXml(String json);

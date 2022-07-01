@@ -31,7 +31,6 @@ public class LexmlJsonixProperties {
 	
 	/**
 	 * Indica se a entrada e saída padrão podem ser usadas durante o processo de conversão do executável lexml-jsonix.
-	 * @see <a href="https://github.com/lexml/jsonix-lexml#jsonix-lexml">github.com/lexml/jsonix-lexml#jsonix-lexml</a>
 	 */
 	private boolean usarEntradaSaidaPadraoDuranteConversao = true;
 	

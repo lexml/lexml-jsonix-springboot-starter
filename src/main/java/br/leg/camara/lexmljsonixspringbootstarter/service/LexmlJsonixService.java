@@ -8,7 +8,6 @@ import javax.validation.constraints.NotBlank;
  * Especificação dos métodos para retornar dados de proposições e texto em formato Lexml.
  * 
  * @author Robson Barros
- * @see {@link br.leg.camara.lexmljsonixspringbootstarter.service.Proposicao Proposicao}
  */
 public interface LexmlJsonixService {
 	

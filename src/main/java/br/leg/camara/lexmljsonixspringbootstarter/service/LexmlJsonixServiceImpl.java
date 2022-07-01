@@ -70,7 +70,6 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	 * Este método utiliza um bean que implementa a interface ConversorLexmlJsonix para realizar a conversão
 	 * de xml para json do texto Lexml da proposição.
 	 *
-	 * @see {@link br.leg.camara.lexmljsonixspringbootstarter.conversor.ConversorLexmlJsonix ConversorLexmlJsonix}
 	 */
 	public String getTextoProposicaoAsJson(String sigla, Integer ano, String numero) {
 		Proposicao proposicao = getProposicao(sigla, ano, numero);
@@ -85,7 +84,6 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	 * Este método utiliza um bean que implementa a interface ConversorLexmlJsonix para realizar a conversão
 	 * de xml para json do texto Lexml da proposição.
 	 *
-	 * @see {@link br.leg.camara.lexmljsonixspringbootstarter.conversor.ConversorLexmlJsonix ConversorLexmlJsonix}
 	 */
 	public String getTextoProposicaoAsJson(String idSdlegDocumentoItemDigital) {
 		String xml = getTextoProposicaoAsXml(idSdlegDocumentoItemDigital);

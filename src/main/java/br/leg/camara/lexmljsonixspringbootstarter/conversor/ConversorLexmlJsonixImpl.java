@@ -19,7 +19,6 @@ import br.leg.camara.lexmljsonixspringbootstarter.utils.DadosInOut;
  * <a href="https://github.com/lexml/jsonix-lexml">https://github.com/lexml/jsonix-lexml</a> para realizar a conversão.
  *
  * @author Robson Barros
- * @see <a href="https://github.com/lexml/jsonix-lexml">https://github.com/lexml/jsonix-lexml</a>
  */
 public class ConversorLexmlJsonixImpl implements ConversorLexmlJsonix {
 
