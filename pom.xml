@@ -4,7 +4,7 @@
 
     <groupId>br.gov.lexml</groupId>
     <artifactId>lexml-jsonix-spring-boot-starter</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>0.1.1</version>
     <name>lexml-jsonix-spring-boot-starter</name>
     <description>Biblioteca que retorna o texto de uma norma em formato jsonix</description>
     <url>https://lexml.github.io/lexml-jsonix-springboot-starter</url>
@@ -37,6 +37,7 @@
         <connection>scm:git:git@github.com/lexml/lexml-jsonix-spring-boot-starter.git</connection>
         <developerConnection>scm:git:git@github.com/lexml/lexml-jsonix-spring-boot-starter.git</developerConnection>
         <url>https://github.com/lexml/lexml-jsonix-spring-boot-starter/tree/develop</url>
+    <tag>lexml-jsonix-spring-boot-starter-0.1.1</tag>
   </scm>
 
 
