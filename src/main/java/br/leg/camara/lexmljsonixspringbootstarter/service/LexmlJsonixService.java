@@ -22,6 +22,14 @@ public interface LexmlJsonixService {
 	public List<Proposicao> getProposicoes(@NotBlank String sigla, @NotBlank Integer ano, String numero);
 	
 	/**
+	 * Retorna uma lista de proposições em tramitação dada a sigla do tipo da proposição.
+	 * 
+	 * @param sigla  Sigla da proposição. Parâmetro obrigatório.
+	 * @return Retorna uma lista de proposições
+	 */
+	public List<Proposicao> getProposicoesEmTramitacao(@NotBlank String sigla);
+	
+	/**
 	 * Retorna uma proposição.
 	 * 
 	 * @param sigla  Sigla da proposição. Parâmetro obrigatório.

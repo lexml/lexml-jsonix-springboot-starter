@@ -30,6 +30,7 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Proposicao> getProposicoes(@NotBlank String sigla, @NotBlank Integer ano, String numero) {
 		String complemento = ObjectUtils.isEmpty(numero) ? "" : "?numero=" + numero;
 		String urlTemplate = jsonixProperties.getUrlProposicoes() + "/%s/%d%s";
@@ -42,11 +43,25 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
+	public List<Proposicao> getProposicoesEmTramitacao(@NotBlank String sigla) {
+		String urlTemplate = jsonixProperties.getUrlProposicoes() + "/%s?e=A";
+		String url = String.format(urlTemplate, sigla);
+		ResponseEntity<List<Proposicao>> responseEntity = restTemplate
+				.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<Proposicao>>(){});
+		return responseEntity.getBody();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public Proposicao getProposicao(@NotBlank String sigla, @NotBlank Integer ano, @NotBlank String numero) {
 		List<Proposicao> proposicoes = getProposicoes(sigla, ano, numero);
 		return ObjectUtils.isEmpty(proposicoes) ? null : proposicoes.get(0);
 	}
 
+	@Override
 	public String getTextoProposicaoAsXml(String sigla, Integer ano, String numero) {
 		Proposicao proposicao = getProposicao(sigla, ano, numero);
 		if (ObjectUtils.isEmpty(proposicao.getIdSdlegDocumentoItemDigital()))
@@ -54,6 +69,7 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 		return getTextoProposicaoAsXml(proposicao.getIdSdlegDocumentoItemDigital());
 	}
 
+	@Override
 	public String getTextoProposicaoAsXml(String idSdlegDocumentoItemDigital) {
 		try {
 			byte[] zip = getLexmlZip(idSdlegDocumentoItemDigital);
@@ -71,6 +87,7 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	 * de xml para json do texto Lexml da proposição.
 	 *
 	 */
+	@Override
 	public String getTextoProposicaoAsJson(String sigla, Integer ano, String numero) {
 		Proposicao proposicao = getProposicao(sigla, ano, numero);
 		if (ObjectUtils.isEmpty(proposicao.getIdSdlegDocumentoItemDigital()))
@@ -85,6 +102,7 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	 * de xml para json do texto Lexml da proposição.
 	 *
 	 */
+	@Override
 	public String getTextoProposicaoAsJson(String idSdlegDocumentoItemDigital) {
 		String xml = getTextoProposicaoAsXml(idSdlegDocumentoItemDigital);
 		return conversorLexmlJsonix.xmlToJson(xml);
