@@ -1,5 +1,7 @@
 package br.leg.camara.lexmljsonixspringbootstarter.service;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,5 +39,9 @@ public class Proposicao {
 	
 	private String idSdlegDocumentoItemDigital;
 	private String urlDownloadItemDigitalZip;
+	
+	private LocalDate dataPublicacao;
+	private LocalDate dataLimiteRecebimentoEmendas;
+	private String labelPrazoRecebimentoEmendas;
 
 }

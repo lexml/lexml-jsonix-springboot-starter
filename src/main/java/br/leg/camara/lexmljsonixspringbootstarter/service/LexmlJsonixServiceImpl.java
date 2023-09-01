@@ -1,7 +1,12 @@
 package br.leg.camara.lexmljsonixspringbootstarter.service;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
@@ -20,6 +25,8 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	private ConversorLexmlJsonix conversorLexmlJsonix;
 	private LexmlJsonixProperties jsonixProperties;
 	private RestTemplate restTemplate;
+	
+	private final String SIGLA_MPV = "MPV";
 
 	public LexmlJsonixServiceImpl(ConversorLexmlJsonix conversorLexmlJsonix, LexmlJsonixProperties jsonixProperties, RestTemplate restTemplate) {
 		this.conversorLexmlJsonix = conversorLexmlJsonix;
@@ -31,25 +38,24 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Proposicao> getProposicoes(@NotBlank String sigla, @NotBlank Integer ano, String numero) {
-		String complemento = ObjectUtils.isEmpty(numero) ? "" : "?numero=" + numero;
-		String urlTemplate = jsonixProperties.getUrlProposicoes() + "/%s/%d%s";
-		String url = String.format(urlTemplate, sigla, ano, complemento);
-		ResponseEntity<List<Proposicao>> responseEntity = restTemplate
-				.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<Proposicao>>(){});
-		return responseEntity.getBody();
+	public List<Proposicao> getProposicoes(@NotBlank String sigla, @NotBlank Integer ano, String numero, Boolean carregarDatasDeMPs) {
+		List<Proposicao> proposicoes = this.getProposicoesExchange(sigla, ano, numero);
+		if(Boolean.TRUE.equals(carregarDatasDeMPs) && SIGLA_MPV.equals(sigla)) {
+			return this.carregarDatasMPVs(proposicoes);
+		}
+		return proposicoes;
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Proposicao> getProposicoesEmTramitacao(@NotBlank String sigla) {
-		String urlTemplate = jsonixProperties.getUrlProposicoes() + "/%s?e=A";
-		String url = String.format(urlTemplate, sigla);
-		ResponseEntity<List<Proposicao>> responseEntity = restTemplate
-				.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<Proposicao>>(){});
-		return responseEntity.getBody();
+	public List<Proposicao> getProposicoesEmTramitacao(@NotBlank String sigla, Boolean carregarDatasDeMPs) {
+		List<Proposicao> proposicoes = this.getProposicoesEmTramitacaoExchange(sigla);
+		if(Boolean.TRUE.equals(carregarDatasDeMPs) && SIGLA_MPV.equals(sigla)) {
+			return this.carregarDatasMPVs(proposicoes);
+		}
+		return proposicoes;
 	}
 
 	/**
@@ -57,7 +63,7 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	 */
 	@Override
 	public Proposicao getProposicao(@NotBlank String sigla, @NotBlank Integer ano, @NotBlank String numero) {
-		List<Proposicao> proposicoes = getProposicoes(sigla, ano, numero);
+		List<Proposicao> proposicoes = getProposicoesExchange(sigla, ano, numero);
 		return ObjectUtils.isEmpty(proposicoes) ? null : proposicoes.get(0);
 	}
 
@@ -111,6 +117,80 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	private byte[] getLexmlZip(String idSdlegDocumentoItemDigital) {
 		String url = jsonixProperties.getUrlSdleg() + "/" + idSdlegDocumentoItemDigital;
 		return restTemplate.getForObject(url, byte[].class);
+	}
+	
+	private List<Proposicao> getProposicoesExchange(@NotBlank String sigla, @NotBlank Integer ano, String numero) {
+		String complemento = ObjectUtils.isEmpty(numero) ? "" : "?numero=" + numero;
+		String urlTemplate = jsonixProperties.getUrlProposicoes() + "/%s/%d%s";
+		String url = String.format(urlTemplate, sigla, ano, complemento);
+		ResponseEntity<List<Proposicao>> responseEntity = restTemplate
+				.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<Proposicao>>(){});
+		return responseEntity.getBody();
+	}
+	
+	private List<Proposicao> getProposicoesEmTramitacaoExchange(@NotBlank String sigla) {
+		String urlTemplate = jsonixProperties.getUrlProposicoes() + "/%s?e=A";
+		String url = String.format(urlTemplate, sigla);
+		ResponseEntity<List<Proposicao>> responseEntity = restTemplate
+				.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<Proposicao>>(){});
+		return responseEntity.getBody();
+	}
+	
+	private List<Proposicao> carregarDatasMPVs(List<Proposicao> proposicoes) {
+		List<Integer> idsProcessos = proposicoes
+			.stream()
+			.parallel()
+			.map(proposicao -> proposicao.getIdProcesso())
+			.collect(Collectors.toList());
+		
+		List<DatasMP> datasMPs = this.getDatasMPsExchange(idsProcessos);		
+		proposicoes.forEach(proposicao -> {
+			Optional<DatasMP> dataMPVOptional = datasMPs
+				.stream()
+				.filter(dataMPV -> dataMPV.getIdProcesso().equals(proposicao.getIdProcesso()))
+				.findFirst();
+			
+			if(dataMPVOptional.isPresent()) {
+				DatasMP dataMPV = dataMPVOptional.get();
+				
+				proposicao.setDataPublicacao(dataMPV.getDataPublicacao());
+				proposicao.setDataLimiteRecebimentoEmendas(dataMPV.getDataLimiteRecebimentoEmendas());
+				proposicao.setLabelPrazoRecebimentoEmendas(this.formartarLabel(dataMPV));
+			}
+			
+		});
+		
+		return proposicoes;
+	}
+	
+	private List<DatasMP> getDatasMPsExchange(List<Integer> idsProcessos) {
+		String url = jsonixProperties.getUrlDatasMPVs() + idsProcessos.stream()
+			.map(idProcesso -> idProcesso.toString())
+			.reduce("?", (queryParam, idProcesso) ->  queryParam + "idsProcessos=" + idProcesso + "&");
+		
+		ResponseEntity<List<DatasMP>> responseEntity = restTemplate
+				.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<DatasMP>>(){});
+		return responseEntity.getBody();
+	}
+	
+	private String formartarLabel(DatasMP datasMP) {
+		return this.formartarLabel(datasMP.getDataLimiteRecebimentoEmendas());
+	}	
+	
+	private String formartarLabel(LocalDate dataLimite) {
+		LocalDate now = LocalDate.now();
+		String dataLimiteFormatada = dataLimite.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+		
+		if(dataLimite.isBefore(now)) {
+			return "encerrado";
+		} else if(dataLimite.isEqual(now)) {			
+			return dataLimiteFormatada.concat(" (hoje)");
+		} else if(dataLimite.isAfter(now)) {
+			long daysBetween = ChronoUnit.DAYS.between(now, dataLimite);
+			return dataLimiteFormatada.concat(" (").concat(String.valueOf(daysBetween)).concat(daysBetween > 1L ? " dias" : " dia").concat(")");
+		} else {
+			return "";
+		}
 	}
 
 }

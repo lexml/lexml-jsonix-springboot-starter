@@ -29,6 +29,9 @@ public class LexmlJsonixProperties {
 	 */
 	private String urlSdleg = "https://legis.senado.gov.br/sdleg-getter/documento/download";
 	
+	
+	private String urlDatasMPVs = "https://legis.senado.gov.br/legis/resources/lex/proposicoes/datas-mpvs";
+	
 	/**
 	 * Indica se a entrada e saída padrão podem ser usadas durante o processo de conversão do executável lexml-jsonix.
 	 */
