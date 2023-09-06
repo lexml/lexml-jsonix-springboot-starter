@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
@@ -40,9 +42,16 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	@Override
 	public List<Proposicao> getProposicoes(@NotBlank String sigla, @NotBlank Integer ano, String numero, Boolean carregarDatasDeMPs) {
 		List<Proposicao> proposicoes = this.getProposicoesExchange(sigla, ano, numero);
+		Set<Integer> idsDoma = new HashSet<>();
+    	
+    	// Retira duplicações
+		proposicoes = proposicoes.stream().filter(p -> idsDoma.add(p.getIdDocumentoManifestacao()))
+    			.collect(Collectors.toList());
+    	
 		if(Boolean.TRUE.equals(carregarDatasDeMPs) && SIGLA_MPV.equals(sigla)) {
 			return this.carregarDatasMPVs(proposicoes);
 		}
+		
 		return proposicoes;
 	}
 	
@@ -52,6 +61,12 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	@Override
 	public List<Proposicao> getProposicoesEmTramitacao(@NotBlank String sigla, Boolean carregarDatasDeMPs) {
 		List<Proposicao> proposicoes = this.getProposicoesEmTramitacaoExchange(sigla);
+		Set<Integer> idsDoma = new HashSet<>();
+		
+		// Retira duplicações e MPs anteriores a 2022
+		proposicoes = proposicoes.stream().filter(p -> idsDoma.add(p.getIdDocumentoManifestacao()) && p.getAno() >= 2022)
+    			.collect(Collectors.toList());
+    	
 		if(Boolean.TRUE.equals(carregarDatasDeMPs) && SIGLA_MPV.equals(sigla)) {
 			return this.carregarDatasMPVs(proposicoes);
 		}
@@ -167,7 +182,7 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 		String url = jsonixProperties.getUrlDatasMPVs() + idsProcessos.stream()
 			.map(idProcesso -> idProcesso.toString())
 			.reduce("?", (queryParam, idProcesso) ->  queryParam + "idsProcessos=" + idProcesso + "&");
-		
+		System.out.println("URL: " + url);
 		ResponseEntity<List<DatasMP>> responseEntity = restTemplate
 				.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<DatasMP>>(){});
 		return responseEntity.getBody();
