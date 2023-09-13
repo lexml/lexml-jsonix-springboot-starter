@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +30,8 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	private RestTemplate restTemplate;
 	
 	private final String SIGLA_MPV = "MPV";
+	
+	private final int ANO_LIMITE = 2022; // Até esse ano não existem MPs em tramitação
 
 	public LexmlJsonixServiceImpl(ConversorLexmlJsonix conversorLexmlJsonix, LexmlJsonixProperties jsonixProperties, RestTemplate restTemplate) {
 		this.conversorLexmlJsonix = conversorLexmlJsonix;
@@ -63,8 +66,8 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 		List<Proposicao> proposicoes = this.getProposicoesEmTramitacaoExchange(sigla);
 		Set<Integer> idsDoma = new HashSet<>();
 		
-		// Retira duplicações e MPs anteriores a 2022
-		proposicoes = proposicoes.stream().filter(p -> idsDoma.add(p.getIdDocumentoManifestacao()) && p.getAno() >= 2022)
+		// Retira duplicações e MPs anteriores a 2023
+		proposicoes = proposicoes.stream().filter(p -> idsDoma.add(p.getIdDocumentoManifestacao()) && p.getAno() > ANO_LIMITE)
     			.collect(Collectors.toList());
     	
 		if(Boolean.TRUE.equals(carregarDatasDeMPs) && SIGLA_MPV.equals(sigla)) {
@@ -155,6 +158,7 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 		List<Integer> idsProcessos = proposicoes
 			.stream()
 			.parallel()
+			.filter(p -> p.getAno() > ANO_LIMITE)
 			.map(proposicao -> proposicao.getIdProcesso())
 			.collect(Collectors.toList());
 		
@@ -172,6 +176,9 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 				proposicao.setDataLimiteRecebimentoEmendas(dataMPV.getDataLimiteRecebimentoEmendas());
 				proposicao.setLabelPrazoRecebimentoEmendas(this.formartarLabel(dataMPV));
 			}
+			else {
+				proposicao.setLabelPrazoRecebimentoEmendas("encerrado");
+			}
 			
 		});
 		
@@ -179,6 +186,9 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	}
 	
 	private List<DatasMP> getDatasMPsExchange(List<Integer> idsProcessos) {
+		if(idsProcessos.isEmpty()) {
+			return Arrays.asList();
+		}
 		String url = jsonixProperties.getUrlDatasMPVs() + idsProcessos.stream()
 			.map(idProcesso -> idProcesso.toString())
 			.reduce("?", (queryParam, idProcesso) ->  queryParam + "idsProcessos=" + idProcesso + "&");
@@ -200,8 +210,8 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 			return "encerrado";
 		} else if(dataLimite.isEqual(now)) {			
 			return dataLimiteFormatada.concat(" (hoje)");
-		} else if(dataLimite.isAfter(now)) {
-			long daysBetween = ChronoUnit.DAYS.between(now, dataLimite);
+		} else if(!now.isAfter(dataLimite)) {
+			long daysBetween = ChronoUnit.DAYS.between(now, dataLimite) + 1;
 			return dataLimiteFormatada.concat(" (").concat(String.valueOf(daysBetween)).concat(daysBetween > 1L ? " dias" : " dia").concat(")");
 		} else {
 			return "";
