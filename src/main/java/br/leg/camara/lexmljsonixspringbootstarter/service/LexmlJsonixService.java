@@ -17,7 +17,7 @@ public interface LexmlJsonixService {
 	 * @param sigla  Sigla da proposição. Parâmetro obrigatório.
 	 * @param ano    Ano da proposição. Parâmetro obrigatório.
 	 * @param numero Número da proposição. Parâmetro opcional.
-	 * @param numero Flag para o carregamento das datas da MPV. Parâmetro opcional.
+	 * @param carregarDatasDeMPs Flag para o carregamento das datas da MPV. Parâmetro opcional.
 	 * @return Retorna uma lista de proposições
 	 */
 	public List<Proposicao> getProposicoes(@NotBlank String sigla, @NotBlank Integer ano, String numero, Boolean carregarDatasDeMPs);
@@ -26,7 +26,7 @@ public interface LexmlJsonixService {
 	 * Retorna uma lista de proposições em tramitação dada a sigla do tipo da proposição.
 	 * 
 	 * @param sigla  Sigla da proposição. Parâmetro obrigatório.
-	 * @param numero Flag para o carregamento das datas da MPV. Parâmetro opcional.
+	 * @param carregarDatasDeMPs Flag para o carregamento das datas da MPV. Parâmetro opcional.
 	 * @return Retorna uma lista de proposições
 	 */
 	public List<Proposicao> getProposicoesEmTramitacao(@NotBlank String sigla, Boolean carregarDatasDeMPs);
