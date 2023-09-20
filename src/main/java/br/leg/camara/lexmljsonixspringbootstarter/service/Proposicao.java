@@ -31,6 +31,8 @@ public class Proposicao {
 	
 	private Boolean emElaboracao;
 	
+	private String estadoProposicao;
+	
 	private String ementa;
 	
 	private String dataLeitura;
@@ -43,5 +45,6 @@ public class Proposicao {
 	private LocalDate dataPublicacao;
 	private LocalDate dataLimiteRecebimentoEmendas;
 	private String labelPrazoRecebimentoEmendas;
+	private String labelTramitacao;
 
 }

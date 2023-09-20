@@ -175,9 +175,11 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 				proposicao.setDataPublicacao(dataMPV.getDataPublicacao());
 				proposicao.setDataLimiteRecebimentoEmendas(dataMPV.getDataLimiteRecebimentoEmendas());
 				proposicao.setLabelPrazoRecebimentoEmendas(this.formartarLabel(dataMPV));
+				proposicao.setLabelTramitacao(this.formatarLabelTramitacao(proposicao, dataMPV));
 			}
 			else {
 				proposicao.setLabelPrazoRecebimentoEmendas("encerrado");
+				proposicao.setLabelTramitacao("");
 			}
 			
 		});
@@ -185,6 +187,14 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 		return proposicoes;
 	}
 	
+	private String formatarLabelTramitacao(Proposicao proposicao, DatasMP dataMPV) {
+		if (proposicao.getEstadoProposicao().equalsIgnoreCase("Encerrado")) {
+			return "";
+		}
+		long daysBetween = ChronoUnit.DAYS.between(proposicao.getDataPublicacao(), LocalDate.now()) + 1;
+		return daysBetween + "º dia";
+	}
+
 	private List<DatasMP> getDatasMPsExchange(List<Integer> idsProcessos) {
 		if(idsProcessos.isEmpty()) {
 			return Arrays.asList();
