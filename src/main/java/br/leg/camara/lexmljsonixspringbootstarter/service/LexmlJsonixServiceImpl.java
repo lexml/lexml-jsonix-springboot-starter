@@ -51,7 +51,7 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 		proposicoes = proposicoes.stream().filter(p -> idsDoma.add(p.getIdDocumentoManifestacao()))
     			.collect(Collectors.toList());
     	
-		if(Boolean.TRUE.equals(carregarDatasDeMPs) && SIGLA_MPV.equals(sigla)) {
+		if(Boolean.TRUE.equals(carregarDatasDeMPs) && SIGLA_MPV.equalsIgnoreCase(sigla)) {
 			return this.carregarDatasMPVs(proposicoes);
 		}
 		
@@ -70,7 +70,7 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 		proposicoes = proposicoes.stream().filter(p -> idsDoma.add(p.getIdDocumentoManifestacao()) && p.getAno() > ANO_LIMITE)
     			.collect(Collectors.toList());
     	
-		if(Boolean.TRUE.equals(carregarDatasDeMPs) && SIGLA_MPV.equals(sigla)) {
+		if(Boolean.TRUE.equals(carregarDatasDeMPs) && SIGLA_MPV.equalsIgnoreCase(sigla)) {
 			return this.carregarDatasMPVs(proposicoes);
 		}
 		return proposicoes;
