@@ -213,6 +213,11 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	}	
 	
 	private String formartarLabel(LocalDate dataLimite) {
+		
+		if(dataLimite == null) {
+			return "";
+		}
+		
 		LocalDate now = LocalDate.now();
 		String dataLimiteFormatada = dataLimite.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 		
