@@ -46,5 +46,6 @@ public class Proposicao {
 	private LocalDate dataLimiteRecebimentoEmendas;
 	private String labelPrazoRecebimentoEmendas;
 	private String labelTramitacao;
+	private String tipoMateriaOrcamentaria;
 
 }
