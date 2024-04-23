@@ -27,9 +27,10 @@ public interface LexmlJsonixService {
 	 * 
 	 * @param sigla  Sigla da proposição. Parâmetro obrigatório.
 	 * @param carregarDatasDeMPs Flag para o carregamento das datas da MPV. Parâmetro opcional.
+	 * @param preferirSubstitutivo Retorna o texto substitutivo da proposição, caso exista.
 	 * @return Retorna uma lista de proposições
 	 */
-	public List<Proposicao> getProposicoesEmTramitacao(@NotBlank String sigla, Boolean carregarDatasDeMPs);
+	public List<Proposicao> getProposicoesEmTramitacao(@NotBlank String sigla, Boolean carregarDatasDeMPs, Boolean preferirSubstitutivo);
 	
 	/**
 	 * Retorna uma proposição.

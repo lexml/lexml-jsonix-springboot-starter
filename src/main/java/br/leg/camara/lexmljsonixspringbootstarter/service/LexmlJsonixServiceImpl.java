@@ -62,8 +62,9 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Proposicao> getProposicoesEmTramitacao(@NotBlank String sigla, Boolean carregarDatasDeMPs) {
-		List<Proposicao> proposicoes = this.getProposicoesEmTramitacaoExchange(sigla);
+	public List<Proposicao> getProposicoesEmTramitacao(@NotBlank String sigla, Boolean carregarDatasDeMPs,
+													   Boolean preferirSubstitutivo) {
+		List<Proposicao> proposicoes = this.getProposicoesEmTramitacaoExchange(sigla, preferirSubstitutivo);
 		Set<Integer> idsDoma = new HashSet<>();
 		
 		// Retira duplicações e MPs anteriores a 2023
@@ -146,8 +147,10 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 		return responseEntity.getBody();
 	}
 	
-	private List<Proposicao> getProposicoesEmTramitacaoExchange(@NotBlank String sigla) {
-		String urlTemplate = jsonixProperties.getUrlProposicoes() + "/%s?e=A&t=i";
+	private List<Proposicao> getProposicoesEmTramitacaoExchange(@NotBlank String sigla, Boolean preferirSubstitutivo) {
+		String urlTemplate = jsonixProperties.getUrlProposicoes() + "/%s?e=A";
+		if (Boolean.FALSE.equals(preferirSubstitutivo))
+			urlTemplate += "&t=i";
 		String url = String.format(urlTemplate, sigla);
 		ResponseEntity<List<Proposicao>> responseEntity = restTemplate
 				.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<Proposicao>>(){});
