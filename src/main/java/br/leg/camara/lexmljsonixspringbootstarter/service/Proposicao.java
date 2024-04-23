@@ -47,5 +47,6 @@ public class Proposicao {
 	private String labelPrazoRecebimentoEmendas;
 	private String labelTramitacao;
 	private String tipoMateriaOrcamentaria;
+	private Boolean indTextoAprovadoTurnoOuSegundoTurno;
 
 }
