@@ -43,8 +43,8 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Proposicao> getProposicoes(@NotBlank String sigla, @NotBlank Integer ano, String numero, Boolean carregarDatasDeMPs) {
-		List<Proposicao> proposicoes = this.getProposicoesExchange(sigla, ano, numero);
+	public List<Proposicao> getProposicoes(@NotBlank String sigla, @NotBlank Integer ano, String numero, Boolean carregarDatasDeMPs, Boolean preferirSubstitutivo) {
+		List<Proposicao> proposicoes = this.getProposicoesExchange(sigla, ano, numero, preferirSubstitutivo);
 		Set<Integer> idsDoma = new HashSet<>();
     	
     	// Retira duplicações
@@ -81,14 +81,14 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Proposicao getProposicao(@NotBlank String sigla, @NotBlank Integer ano, @NotBlank String numero) {
-		List<Proposicao> proposicoes = getProposicoesExchange(sigla, ano, numero);
+	public Proposicao getProposicao(@NotBlank String sigla, @NotBlank Integer ano, @NotBlank String numero, @NotBlank Boolean preferirSubstitutivo) {
+		List<Proposicao> proposicoes = getProposicoesExchange(sigla, ano, numero, preferirSubstitutivo);
 		return ObjectUtils.isEmpty(proposicoes) ? null : proposicoes.get(0);
 	}
 
 	@Override
-	public String getTextoProposicaoAsXml(String sigla, Integer ano, String numero) {
-		Proposicao proposicao = getProposicao(sigla, ano, numero);
+	public String getTextoProposicaoAsXml(String sigla, Integer ano, String numero, Boolean preferirSubstitutivo) {
+		Proposicao proposicao = getProposicao(sigla, ano, numero, preferirSubstitutivo);
 		if (ObjectUtils.isEmpty(proposicao.getIdSdlegDocumentoItemDigital()))
 			return null;
 		return getTextoProposicaoAsXml(proposicao.getIdSdlegDocumentoItemDigital());
@@ -113,8 +113,8 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	 *
 	 */
 	@Override
-	public String getTextoProposicaoAsJson(String sigla, Integer ano, String numero) {
-		Proposicao proposicao = getProposicao(sigla, ano, numero);
+	public String getTextoProposicaoAsJson(String sigla, Integer ano, String numero, Boolean preferirSubstitutivo) {
+		Proposicao proposicao = getProposicao(sigla, ano, numero, preferirSubstitutivo);
 		if (ObjectUtils.isEmpty(proposicao.getIdSdlegDocumentoItemDigital()))
 			return null;
 		return getTextoProposicaoAsJson(proposicao.getIdSdlegDocumentoItemDigital());
@@ -138,9 +138,9 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 		return restTemplate.getForObject(url, byte[].class);
 	}
 	
-	private List<Proposicao> getProposicoesExchange(@NotBlank String sigla, @NotBlank Integer ano, String numero) {
-		String complemento = "?t=i" + (ObjectUtils.isEmpty(numero) ? "" : "&numero=" + numero);
-		String urlTemplate = jsonixProperties.getUrlProposicoes() + "/%s/%d%s";
+	private List<Proposicao> getProposicoesExchange(@NotBlank String sigla, @NotBlank Integer ano, String numero, Boolean preferirSubstitutivo) {
+		String complemento = (Boolean.FALSE.equals(preferirSubstitutivo) ? "t=i" : "") + (ObjectUtils.isEmpty(numero) ? "" : "&numero=" + numero);
+		String urlTemplate = jsonixProperties.getUrlProposicoes() + "/%s/%d?%s";
 		String url = String.format(urlTemplate, sigla, ano, complemento);
 		ResponseEntity<List<Proposicao>> responseEntity = restTemplate
 				.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<Proposicao>>(){});
@@ -148,9 +148,7 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	}
 	
 	private List<Proposicao> getProposicoesEmTramitacaoExchange(@NotBlank String sigla, Boolean preferirSubstitutivo) {
-		String urlTemplate = jsonixProperties.getUrlProposicoes() + "/%s?e=A";
-		if (Boolean.FALSE.equals(preferirSubstitutivo))
-			urlTemplate += "&t=i";
+		String urlTemplate = jsonixProperties.getUrlProposicoes() + "/%s?e=A" + (Boolean.FALSE.equals(preferirSubstitutivo) ? "?t=i" : "");
 		String url = String.format(urlTemplate, sigla);
 		ResponseEntity<List<Proposicao>> responseEntity = restTemplate
 				.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<Proposicao>>(){});

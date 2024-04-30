@@ -18,9 +18,10 @@ public interface LexmlJsonixService {
 	 * @param ano    Ano da proposição. Parâmetro obrigatório.
 	 * @param numero Número da proposição. Parâmetro opcional.
 	 * @param carregarDatasDeMPs Flag para o carregamento das datas da MPV. Parâmetro opcional.
+	 * @param preferirSubstitutivo Retorna o texto substitutivo da proposição, caso exista.
 	 * @return Retorna uma lista de proposições
 	 */
-	public List<Proposicao> getProposicoes(@NotBlank String sigla, @NotBlank Integer ano, String numero, Boolean carregarDatasDeMPs);
+	public List<Proposicao> getProposicoes(@NotBlank String sigla, @NotBlank Integer ano, String numero, Boolean carregarDatasDeMPs, Boolean preferirSubstitutivo);
 	
 	/**
 	 * Retorna uma lista de proposições em tramitação dada a sigla do tipo da proposição.
@@ -40,7 +41,7 @@ public interface LexmlJsonixService {
 	 * @param numero Número da proposição. Parâmetro obrigatório.
 	 * @return um objeto {@code Proposicao}
 	 */
-	public Proposicao getProposicao(@NotBlank String sigla, @NotBlank Integer ano, @NotBlank String numero);
+	public Proposicao getProposicao(@NotBlank String sigla, @NotBlank Integer ano, @NotBlank String numero, @NotBlank Boolean preferirSubstitutivo);
 	
 	/**
 	 * Retorna o texto Lexml de uma proposição em formato xml.
@@ -50,7 +51,7 @@ public interface LexmlJsonixService {
 	 * @param numero Número da proposição. Parâmetro obrigatório.
 	 * @return string xml do texto de uma proposição.
 	 */
-	public String getTextoProposicaoAsXml(String sigla, Integer ano, String numero);
+	public String getTextoProposicaoAsXml(String sigla, Integer ano, String numero, Boolean preferirSubstitutivo);
 	
 	/**
 	 * Retorna o texto Lexml de uma proposição em formato xml.
@@ -68,7 +69,7 @@ public interface LexmlJsonixService {
 	 * @param numero Número da proposição. Parâmetro obrigatório.
 	 * @return string json do texto de uma proposição.
 	 */
-	public String getTextoProposicaoAsJson(String sigla, Integer ano, String numero);
+	public String getTextoProposicaoAsJson(String sigla, Integer ano, String numero, Boolean preferirSubstitutivo);
 	
 	/**
 	 * Retorna o texto Lexml de uma proposição em formato json.
