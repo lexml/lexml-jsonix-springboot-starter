@@ -148,7 +148,7 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	}
 	
 	private List<Proposicao> getProposicoesEmTramitacaoExchange(@NotBlank String sigla, Boolean preferirSubstitutivo) {
-		String urlTemplate = jsonixProperties.getUrlProposicoes() + "/%s?e=A" + (Boolean.FALSE.equals(preferirSubstitutivo) ? "?t=i" : "");
+		String urlTemplate = jsonixProperties.getUrlProposicoes() + "/%s?e=A" + (Boolean.FALSE.equals(preferirSubstitutivo) ? "&t=i" : "");
 		String url = String.format(urlTemplate, sigla);
 		ResponseEntity<List<Proposicao>> responseEntity = restTemplate
 				.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<Proposicao>>(){});
