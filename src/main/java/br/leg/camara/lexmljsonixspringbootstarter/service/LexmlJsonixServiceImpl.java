@@ -23,6 +23,7 @@ import br.leg.camara.lexmljsonixspringbootstarter.conversor.ConversorLexmlJsonix
 import br.leg.camara.lexmljsonixspringbootstarter.conversor.LexmlJsonixProperties;
 import br.leg.camara.lexmljsonixspringbootstarter.utils.ZipUtils;
 
+
 public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 
 	private ConversorLexmlJsonix conversorLexmlJsonix;
@@ -32,6 +33,7 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 	private final String SIGLA_MPV = "MPV";
 	
 	private final int ANO_LIMITE = 2022; // Até esse ano não existem MPs em tramitação
+
 
 	public LexmlJsonixServiceImpl(ConversorLexmlJsonix conversorLexmlJsonix, LexmlJsonixProperties jsonixProperties, RestTemplate restTemplate) {
 		this.conversorLexmlJsonix = conversorLexmlJsonix;
@@ -142,9 +144,13 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 		String complemento = (Boolean.FALSE.equals(preferirSubstitutivo) ? "t=i" : "") + (ObjectUtils.isEmpty(numero) ? "" : "&numero=" + numero);
 		String urlTemplate = jsonixProperties.getUrlProposicoes() + "/%s/%d?%s";
 		String url = String.format(urlTemplate, sigla, ano, complemento);
+		url +=  "&smetadadosParser=true";
 		ResponseEntity<List<Proposicao>> responseEntity = restTemplate
 				.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<Proposicao>>(){});
-		return responseEntity.getBody();
+		
+		List<Proposicao> proposicoes = responseEntity.getBody();
+				
+		return proposicoes;
 	}
 	
 	private List<Proposicao> getProposicoesEmTramitacaoExchange(@NotBlank String sigla, Boolean preferirSubstitutivo) {
