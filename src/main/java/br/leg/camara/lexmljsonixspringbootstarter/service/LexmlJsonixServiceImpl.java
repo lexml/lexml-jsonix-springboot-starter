@@ -144,7 +144,7 @@ public class LexmlJsonixServiceImpl implements LexmlJsonixService {
 		String complemento = (Boolean.FALSE.equals(preferirSubstitutivo) ? "t=i" : "") + (ObjectUtils.isEmpty(numero) ? "" : "&numero=" + numero);
 		String urlTemplate = jsonixProperties.getUrlProposicoes() + "/%s/%d?%s";
 		String url = String.format(urlTemplate, sigla, ano, complemento);
-		url +=  "&smetadadosParser=true";
+		url +=  "&metadadosParser=true";
 		ResponseEntity<List<Proposicao>> responseEntity = restTemplate
 				.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<Proposicao>>(){});
 		
