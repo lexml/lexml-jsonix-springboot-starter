@@ -2,8 +2,12 @@ package br.leg.camara.lexmljsonixspringbootstarter.service;
 
 import java.io.StringReader;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -66,7 +70,7 @@ public class Proposicao {
 	private Boolean indTextoAprovadoTurnoOuSegundoTurno;
 	
 	
-	private List<String> caracteristicasDetectadas;
+	private Set<String> caracteristicasDetectadas;
 	private static final Pattern XML_STYLESHEET_PI =
 	        Pattern.compile("<\\?xml-stylesheet[^>]*\\?>");
 	
@@ -133,6 +137,9 @@ public class Proposicao {
         if (!metadadosParser.containsKey("saidaParser")) {
             return;
         }
+        
+       
+        
 
         String xmlContent = (String) metadadosParser.get("saidaParser");
         String cleanXml = XML_STYLESHEET_PI
@@ -154,14 +161,24 @@ public class Proposicao {
                         this.urlDownloadItemDigitalZip = null;
                     }
                 	
-                	
-
-                    
                     this.caracteristicasDetectadas = resultado.getResultado().getCaracteristicas()
                             .getCaracteristica().stream()
                             .filter(c -> Boolean.TRUE.equals(c.isPresente()))
                             .map(c -> c.getDescricao())
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toSet());
+                    
+                    if (this.caracteristicasDetectadas != null && !this.caracteristicasDetectadas.isEmpty()) {
+                        
+                        Set<String> caracteristicasImpeditivas = new HashSet<>(Arrays.asList("possui imagem","possui tabela na articulacao","possui pena"));
+                        
+                        boolean hasCaracteristicasImpeditivas = !Collections.disjoint(caracteristicasImpeditivas,this.caracteristicasDetectadas);
+                        
+                        if (hasCaracteristicasImpeditivas) {
+                            this.idDocumentoItemDigital = null;
+                            this.idSdlegDocumentoItemDigital = null;
+                            this.urlDownloadItemDigitalZip = null;                           
+                        }
+                    }
                 }
             }
         }catch (JAXBException e) {
